@@ -203,12 +203,15 @@ module Viewpoint::EWS::SOAP
     # @option opts [Boolean] :raw_response if true do not parse and return
     #   the raw response string.
     def do_soap_request(soapmsg, opts = {})
-      @log.debug <<-EOF.gsub(/^ {8}/, '')
-        Sending SOAP Request:
-        ----------------
-        #{soapmsg}
-        ----------------
-      EOF
+      if @log
+        @log.debug <<-EOF.gsub(/^ {8}/, '')
+          Sending SOAP Request:
+          ----------------
+          #{soapmsg}
+          ----------------
+        EOF
+      end
+
       connection.dispatch(self, soapmsg, opts)
     end
 

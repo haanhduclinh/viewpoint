@@ -28,7 +28,7 @@ module Viewpoint::EWS::ConnectionHelper
     ns = ndoc.collect_namespaces
     err_string  = ndoc.xpath("//faultstring",ns).text
     err_code    = ndoc.xpath("//faultcode",ns).text
-    @log.debug "Internal SOAP error. Message: #{err_string}, Code: #{err_code}"
+    @log.debug("Internal SOAP error. Message: #{err_string}, Code: #{err_code}") if @log
     [err_string, err_code]
   end
 
