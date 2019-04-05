@@ -79,12 +79,15 @@ class Viewpoint::EWS::Connection
   # @param opts [Hash] misc opts for handling the Response
   def dispatch(ews, soapmsg, opts)
     respmsg = post(soapmsg)
-    @log.debug <<-EOF.gsub(/^ {6}/, '')
-      Received SOAP Response:
-      ----------------
-      #{Nokogiri::XML(respmsg).to_xml}
-      ----------------
-    EOF
+    if @log
+      @log.debug <<-EOF.gsub(/^ {6}/, '')
+        Received SOAP Response:
+        ----------------
+        #{Nokogiri::XML(respmsg).to_xml}
+        ----------------
+      EOF
+    end
+
     opts[:raw_response] ? respmsg : ews.parse_soap_response(respmsg, opts)
   end
 
@@ -133,7 +136,7 @@ class Viewpoint::EWS::Connection
     ns = ndoc.collect_namespaces
     err_string  = ndoc.xpath("//faultstring",ns).text
     err_code    = ndoc.xpath("//faultcode",ns).text
-    @log.debug "Internal SOAP error. Message: #{err_string}, Code: #{err_code}"
+    @log.debug("Internal SOAP error. Message: #{err_string}, Code: #{err_code}") if @log
     [err_string, err_code]
   end
 
