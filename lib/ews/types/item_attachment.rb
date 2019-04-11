@@ -48,6 +48,8 @@ module Viewpoint::EWS::Types
     def get_all_properties!
       resp = ews.get_attachment attachment_ids: [self.id]
       data = @ews_item.merge!(parse_response(resp))
+      ews.auto_deepen = false
+      ews.no_auto_deepen_behavior = nil
       data[:content] = {text: class_by_name(:message).new(ews, data[:message]).to_mail}
       data
     end
