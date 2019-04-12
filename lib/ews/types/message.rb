@@ -51,12 +51,12 @@ module Viewpoint::EWS::Types
           else
             if att.is_inline?
               mail.attachments.inline[att.file_name] =  {
-                body: att.content.present? ? Base64.decode64(att.content) : "",
+                body: att.content.nil? || att.content.empty? ? "" : Base64.decode64(att.content),
                 mime_type: att.content_type
               }
             else
               mail.attachments[att.file_name] =  {
-    		        body: att.content.present? ? Base64.decode64(att.content) : "",
+    		        body: att.content.nil? || att.content.empty? ? "" : Base64.decode64(att.content),
     		        mime_type: att.content_type
     		      }
             end
