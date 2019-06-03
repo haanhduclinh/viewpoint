@@ -69,8 +69,13 @@ module Viewpoint::EWS::SOAP
     #       {:occurrence_item_id => {:recurring_master_id => 'rid1', :change_key => 'ck', :instance_index => 1}},
     #       {:recurring_master_item_id => {:occurrence_id => 'oid1', :change_key => 'ck'}}
     #       ]}
-    def get_item(opts)
+    def get_item(opts, soap_options = {})
       opts = opts.clone
+
+      if soap_options[:raw_response]
+        opts[:item_shape] = { base_shape: "AllProperties" }
+      end
+
       [:item_shape, :item_ids].each do |k|
         validate_param(opts, k, true)
       end
@@ -84,7 +89,7 @@ module Viewpoint::EWS::SOAP
           }
         end
       end
-      do_soap_request(req, response_class: EwsResponse)
+      do_soap_request(req, { response_class: EwsResponse }.merge(soap_options))
     end
 
     # Defines a request to create an item in the Exchange store.
