@@ -49,7 +49,12 @@ module Viewpoint::EWS::SOAP
           }
         end
       end
-      do_soap_request(req, response_class: EwsResponse)
+
+      if @impersonation_type == "PrincipalName"
+        do_soap_request(req, response_class: EwsResponse, anchor_mailbox: @impersonation_address)
+      else
+        do_soap_request(req, response_class: EwsResponse)
+      end
     end
 
     # Gets items from the Exchange store
@@ -89,7 +94,12 @@ module Viewpoint::EWS::SOAP
           }
         end
       end
-      do_soap_request(req, { response_class: EwsResponse }.merge(soap_options))
+
+      if @impersonation_type == "PrincipalName"
+        do_soap_request(req, { response_class: EwsResponse, anchor_mailbox: @impersonation_address }.merge(soap_options))
+      else
+        do_soap_request(req, { response_class: EwsResponse }.merge(soap_options))
+      end
     end
 
     # Defines a request to create an item in the Exchange store.
@@ -152,7 +162,12 @@ module Viewpoint::EWS::SOAP
           }
         end
       end
-      do_soap_request(req, response_class: EwsResponse)
+
+      if @impersonation_type == "PrincipalName"
+        do_soap_request(req, response_class: EwsResponse, anchor_mailbox: @impersonation_address)
+      else
+        do_soap_request(req, response_class: EwsResponse)
+      end
     end
 
     # Used to modify the properties of an existing item in the Exchange store
