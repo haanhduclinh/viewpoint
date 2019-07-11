@@ -45,8 +45,16 @@ module Viewpoint::EWS::Types
     ITEM_ATTACH_KEY_ALIAS = { }
 
     def get_all_properties!
-      resp = ews.get_attachment attachment_ids: [self.id]
+      resp = get_attachment(self.id)
       @ews_item.merge!(parse_response(resp))
+    end
+
+    def get_attachment(id)
+      ews.get_attachment(attachment_ids: [id])
+    end
+
+    def get_attachments(ids)
+      ews.get_attachment(attachment_ids: ids)
     end
 
     private
