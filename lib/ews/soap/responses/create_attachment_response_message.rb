@@ -21,23 +21,23 @@ module Viewpoint::EWS::SOAP
   class CreateAttachmentResponseMessage < ResponseMessage
     include Viewpoint::StringUtils
 
-    def attachments
+    def attachments(ews_input = nil)
       return @attachments if @attachments
 
       a = safe_hash_access message, [:elems, :attachments, :elems]
-      @attachments = a.nil? ? nil : parse_attachments(a)
+      @attachments = a.nil? ? nil : parse_attachments(a, ews_input)
     end
 
 
     private
 
 
-    def parse_attachments(att)
+    def parse_attachments(att, ews_input)
       att.collect do |a|
         type = a.keys.first
         klass = Viewpoint::EWS::Types.const_get(camel_case(type))
         item = OpenStruct.new
-        item.ews = nil
+        item.ews = ews_input
         klass.new(item, a[type])
       end
     end
