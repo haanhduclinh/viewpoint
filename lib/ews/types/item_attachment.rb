@@ -28,8 +28,7 @@ module Viewpoint::EWS::Types
       meeting_message: [:meeting_message],
       meeting_request: [:meeting_request],
       meeting_response: [:meeting_response],
-      meeting_cancellation: [:meeting_cancellation],
-      content: [:content, :text]
+      meeting_cancellation: [:meeting_cancellation]
     }
 
     ITEM_ATTACH_KEY_TYPES = {
@@ -43,15 +42,19 @@ module Viewpoint::EWS::Types
       meeting_cancellation: :build_meeting_cancellation
     }
 
-    ITEM_ATTACH_KEY_ALIAS = { :file_name  => :name }
+    ITEM_ATTACH_KEY_ALIAS = { }
 
     def get_all_properties!
-      resp = ews.get_attachment attachment_ids: [self.id]
-      data = @ews_item.merge!(parse_response(resp))
-      ews.auto_deepen = false
-      ews.no_auto_deepen_behavior = nil
-      data[:content] = {text: class_by_name(:message).new(ews, data[:message]).to_mail}
-      data
+      resp = get_attachment(self.id)
+      @ews_item.merge!(parse_response(resp))
+    end
+
+    def get_attachment(id)
+      ews.get_attachment(attachment_ids: [id])
+    end
+
+    def get_attachments(ids)
+      ews.get_attachment(attachment_ids: ids)
     end
 
     private
@@ -78,11 +81,7 @@ module Viewpoint::EWS::Types
 
     def parse_response(resp)
       if(resp.status == 'Success')
-        if resp.response_message[:elems][:attachments][:elems][0][:item_attachment]
-          resp.response_message[:elems][:attachments][:elems][0][:item_attachment][:elems].inject(&:merge)
-        else
-          resp.response_message[:elems][:attachments][:elems][0][:file_attachment][:elems].inject(&:merge)
-        end
+        resp.response_message[:elems][:attachments][:elems][0][:item_attachment][:elems].inject(&:merge)
       else
         raise EwsError, "Could not retrieve #{self.class}. #{resp.code}: #{resp.message}"
       end
