@@ -382,7 +382,12 @@ module Viewpoint::EWS::SOAP
           }
         end
       end
-      do_soap_request(req, response_class: EwsResponse)
+
+      if @impersonation_type == "PrincipalName"
+        do_soap_request(req, response_class: EwsResponse, anchor_mailbox: @impersonation_address)
+      else
+        do_soap_request(req, response_class: EwsResponse)
+      end
     end
 
     # Export items as a base64 string
@@ -520,7 +525,12 @@ module Viewpoint::EWS::SOAP
           }
         end
       end
-      do_soap_request(req)
+
+      if @impersonation_type == "PrincipalName"
+        do_soap_request(req, anchor_mailbox: @impersonation_address)
+      else
+        do_soap_request(req)
+      end
     end
 
     # Gets folders from the Exchange store
@@ -555,7 +565,12 @@ module Viewpoint::EWS::SOAP
           }
         end
       end
-      do_soap_request(req)
+
+      if @impersonation_type == "PrincipalName"
+        do_soap_request(req, anchor_mailbox: @impersonation_address)
+      else
+        do_soap_request(req)
+      end
     end
 
     # Defines a request to move folders in the Exchange store
@@ -662,7 +677,12 @@ module Viewpoint::EWS::SOAP
           }
         end
       end
-      do_soap_request(req)
+
+      if @impersonation_type == "PrincipalName"
+        do_soap_request(req, anchor_mailbox: @impersonation_address)
+      else
+        do_soap_request(req)
+      end
     end
 
     # Creates either an item or file attachment and attaches it to the specified item.
@@ -702,7 +722,12 @@ module Viewpoint::EWS::SOAP
           }
         end
       end
-      do_soap_request(req, response_class: EwsResponse)
+
+      if @impersonation_type == "PrincipalName"
+        do_soap_request(req, { response_class: EwsResponse, anchor_mailbox: @impersonation_address })
+      else
+        do_soap_request(req, response_class: EwsResponse)
+      end
     end
 
 
