@@ -49,12 +49,10 @@ module Viewpoint::EWS::MessageAccessors
       resp = parse_create_item(ews.create_item(msg.to_ews))
       msg.file_attachments.each do |f|
         next unless f.kind_of?(File) or f.kind_of?(Tempfile)
-        raise StandardError, "zero byte" if f.size.zero?
         resp.add_file_attachment(f)
       end
       msg.inline_attachments.each do |f|
         next unless f.kind_of?(File) or f.kind_of?(Tempfile)
-        raise StandardError, "zero byte" if f.size.zero?
         resp.add_inline_attachment(f)
       end
       if draft
