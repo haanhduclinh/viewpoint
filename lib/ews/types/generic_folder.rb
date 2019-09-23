@@ -84,7 +84,7 @@ module Viewpoint::EWS::Types
     # @param [DateTime] date_time the time to fetch Items since.
     def items_since(date_time, opts = {})
       opts = opts.clone
-      unless date_time.kind_of?(Date)
+      unless date_time.kind_of?(Date) || date_time.kind_of?(Time)
         raise EwsBadArgumentError, "First argument must be a Date or DateTime"
       end
       restr = {:restriction =>
@@ -97,7 +97,7 @@ module Viewpoint::EWS::Types
 
     # Fetch only items from today (since midnight)
     def todays_items(opts = {})
-      items_since(Date.today, opts)
+      items_since(Time.current.utc.beginning_of_day, opts)
     end
 
     # Fetch items between a given time period
