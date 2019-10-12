@@ -97,7 +97,7 @@ module Viewpoint::EWS::Types
 
     # Fetch only items from today (since midnight)
     def todays_items(opts = {})
-      items_since(Time.current.utc.beginning_of_day, opts)
+      items_since(Date.today, opts)
     end
 
     # Fetch items between a given time period
