@@ -35,6 +35,7 @@ module Viewpoint::EWS
         self.item_attachments ||= []
         self.inline_attachments ||= []
         self.extended_properties ||= []
+        self.from ||= nil
       end
 
       def to_ews_basic
@@ -54,6 +55,9 @@ module Viewpoint::EWS
         msg[:body] = {text: body, body_type: body_type} if body
 
         msg[:importance] = importance if importance
+
+        # attributes for send as
+        msg[:from] = {email_address: from} if from.present?
 
         to_r = to_recipients.collect{|r| {mailbox: {email_address: r}}}
         msg[:to_recipients] = to_r unless to_r.empty?
