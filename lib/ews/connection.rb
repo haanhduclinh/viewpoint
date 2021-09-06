@@ -33,7 +33,9 @@ class Viewpoint::EWS::Connection
   # @option opts [Array]  :trust_ca an array of hashed dir paths or a file
   # @option opts [String] :user_agent the http user agent to use in all requests
   def initialize(endpoint, opts = {})
-    @log = Logging.logger[self.class.name.to_s.to_sym]
+    @log = Logger.new(STDOUT)
+    @log.level = Logger::WARN
+
     if opts[:user_agent]
       @httpcli = HTTPClient.new(agent_name: opts[:user_agent])
     else
