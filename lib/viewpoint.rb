@@ -21,13 +21,10 @@ require 'date'
 require 'base64'
 require 'nokogiri'
 require 'ostruct'
-require 'logging'
+require 'logger'
 
 # String utilities
 require 'viewpoint/string_utils'
-
-# Load the logging setup
-require 'viewpoint/logging'
 
 # Load the Exception classes
 require 'ews/exceptions/exceptions'
