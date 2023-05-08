@@ -149,6 +149,14 @@ module Viewpoint::EWS::SOAP
       @nbuild[NS_EWS_MESSAGES].IndexedPageItemView(attribs)
     end
 
+    def sort_order!(sort_order)
+      @nbuild[NS_EWS_MESSAGES].SortOrder {
+        @nbuild[NS_EWS_TYPES].FieldOrder('Order' => sort_order[:field_order][:order]) {
+          @nbuild[NS_EWS_TYPES].FieldURI!('FieldURI' => sort_order[:field_order][:field_uri])
+        }
+      }
+    end
+
     # Build the BaseShape element
     # @see http://msdn.microsoft.com/en-us/library/aa580545.aspx
     def base_shape!(base_shape)
