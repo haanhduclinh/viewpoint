@@ -149,6 +149,12 @@ module Viewpoint::EWS::SOAP
       @nbuild[NS_EWS_MESSAGES].IndexedPageItemView(attribs)
     end
 
+    def sort_order!(sort_order)
+      attribs = {}
+      sort_order.each_pair {|k,v| attribs[camel_case(k)] = v.to_s}
+      @nbuild[NS_EWS_MESSAGES].SortOrder(attribs)
+    end
+
     # Build the BaseShape element
     # @see http://msdn.microsoft.com/en-us/library/aa580545.aspx
     def base_shape!(base_shape)
