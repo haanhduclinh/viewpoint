@@ -126,6 +126,13 @@ module Viewpoint::EWS::FolderAccessors
     sync_folders_parser(resp)
   end
 
+  def update_folder(opts = {})
+    opts = opts.clone
+    args = update_folder_args(opts)
+    yield args if block_given?
+    resp = ews.update_folder( args )
+    update_folder_parser(resp)
+  end
 
 private
 
@@ -137,7 +144,7 @@ private
     folder_id = {:id => opts[:root]}
     folder_id[:act_as] = opts[:act_as] if opts[:act_as]
     if( opts[:folder_type] )
-      restr = { :is_equal_to => 
+      restr = { :is_equal_to =>
         [
           {:field_uRI => {:field_uRI=>'folder:FolderClass'}},
           {:field_uRI_or_constant=>{:constant =>
@@ -177,6 +184,38 @@ private
       end
     else
       raise EwsError, "Could not create folder. #{resp.code}: #{resp.message}"
+    end
+  end
+
+  # opts = {
+  #   folder_id: "abcXYZ",
+  #   changes: [
+  #     {
+  #       field: :display_name,
+  #       value: "new name"
+  #     }
+  #   ]
+  # }
+  def update_folder_args(opts)
+    folder_changes = opts[:changes]
+    folder_changes.map do |change|
+      {
+        folder_id: opts[:folder_id],
+        field: change[:field],
+        value: change[:value],
+      }
+    end
+  end
+
+  def update_folder_parser(resp)
+    if resp.status == 'Success'
+      folders = resp.response_message[:elems][:folders][:elems]
+      folders.collect do |f|
+        ftype = f.keys.first
+        class_by_name(ftype).new(ews, f[ftype])
+      end
+    else
+      raise EwsError, "Could not update folder. #{resp.code}: #{resp.message}"
     end
   end
 
