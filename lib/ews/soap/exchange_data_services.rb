@@ -609,10 +609,15 @@ module Viewpoint::EWS::SOAP
             builder.nbuild.parent.default_namespace = @default_ns
             builder.nbuild.FolderChanges {
               folder_changes.each do |fc|
-                builder[NS_EWS_TYPES].FolderChange {
-                  builder.dispatch_folder_id!(fc)
-                  builder[NS_EWS_TYPES].Updates {
-                    # @todo finish implementation
+                builder.nbuild[NS_EWS_TYPES].FolderChange {
+                  builder.dispatch_folder_id!(fc[:folder_id])
+                  builder.nbuild[NS_EWS_TYPES].Updates {
+                    builder.nbuild[NS_EWS_TYPES].SetFolderField {
+                      builder.dispatch_field_uri!({field_uri: "folder:#{camel_case(fc[:field].to_s)}"}, NS_EWS_TYPES)
+                      builder.nbuild[NS_EWS_TYPES].Folder {
+                        builder.display_name!(fc[:value])
+                      }
+                    }
                   }
                 }
               end
