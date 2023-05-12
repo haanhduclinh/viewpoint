@@ -42,7 +42,7 @@ module Viewpoint::EWS::Types
       if rm && rm.success?
         CalendarItem.new ews, rm.items.first[:calendar_item][:elems].first
       else
-        raise EwsCreateItemError, "Could not create item in folder. #{rm.code}: #{rm.message_text}" unless rm
+        raise EwsCreateItemError, "Could not create item in folder. #{rm&.code}: #{rm&.message_text}"
       end
     end
 
