@@ -870,8 +870,68 @@ module Viewpoint::EWS::SOAP
       }
     end
 
-    def interval!(num)
+    def absolute_monthly_recurrence!(item)
+      nbuild[NS_EWS_TYPES].AbsoluteMonthlyRecurrence {
+        item.each_pair { |k, v|
+          self.send("#{k}!", v)
+        }
+      }
+    end
+
+    def relative_monthly_recurrence!(item)
+      nbuild[NS_EWS_TYPES].RelativeMonthlyRecurrence {
+        item.each_pair { |k, v|
+          self.send("#{k}!", v)
+        }
+      }
+    end
+
+    def absolute_yearly_recurrence!(item)
+      nbuild[NS_EWS_TYPES].AbsoluteYearlyRecurrence {
+        item.each_pair { |k, v|
+          self.send("#{k}!", v)
+        }
+      }
+    end
+
+    def relative_yearly_recurrence!(item)
+      nbuild[NS_EWS_TYPES].RelativeYearlyRecurrence {
+        item.each_pair { |k, v|
+          self.send("#{k}!", v)
+        }
+      }
+    end
+
+    def end_date_recurrence!(item)
+      nbuild[NS_EWS_TYPES].EndDateRecurrence {
+        item.each_pair { |k, v|
+          self.send("#{k}!", v)
+        }
+      }
+    end
+
+    def days_of_week!(day_of_week) # example: :monday
+      nbuild[NS_EWS_TYPES].DaysOfWeek(day_of_week.to_s.capitalize)
+    end
+
+    def day_of_month!(day_of_month) # example: 1..31
+      nbuild[NS_EWS_TYPES].DayOfMonth(day_of_month)
+    end
+
+    def day_of_week_index!(day) # ex: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
+      nbuild[NS_EWS_TYPES].DayOfWeekIndex(day)
+    end
+
+    def month!(month) # ex: 1..12
+      nbuild[NS_EWS_TYPES].Month(Date::MONTHNAMES[month.to_i])
+    end
+
+    def interval!(num) # 1..99
       nbuild[NS_EWS_TYPES].Interval(num)
+    end
+
+    def is_recurring!(boolean)
+      nbuild[NS_EWS_TYPES].IsRecurring(boolean.to_s.upcase)
     end
 
     def no_end_recurrence!(item)
@@ -1015,6 +1075,10 @@ module Viewpoint::EWS::SOAP
 
     def start_date!(sd)
       nbuild[NS_EWS_TYPES].StartDate sd[:text]
+    end
+
+    def end_date!(sd)
+      nbuild[NS_EWS_TYPES].EndDate sd[:text]
     end
 
     def due_date!(dd)
