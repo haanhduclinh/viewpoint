@@ -1320,8 +1320,9 @@ module Viewpoint::EWS::SOAP
 
     # Insert item, enforce xmlns attribute if prefix is present
     def dispatch_field_item!(item, ns_prefix = nil)
-      item.values.first[:xmlns_attribute] = ns_prefix if ns_prefix
-      build_xml!(item)
+      item.each_pair {|k,v|
+        self.send("#{k}!", v)
+      }
     end
 
     def room_list!(cfg_prop)
