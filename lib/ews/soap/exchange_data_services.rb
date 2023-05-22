@@ -196,7 +196,7 @@ module Viewpoint::EWS::SOAP
     #           {:set_item_field => {
     #             :field_uRI => {:field_uRI => 'item:Subject'},
     #             # The following needs to conform to #build_xml! format for now
-    #             :calendar_item => { :sub_elements => [{:subject => {:text => 'Test Subject'}}]}
+    #             :calendar_item => { [{:subject => {:text => 'Test Subject'}}] }
     #           }}
     #         ]
     #       }
