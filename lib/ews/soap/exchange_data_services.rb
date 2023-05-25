@@ -224,6 +224,28 @@ module Viewpoint::EWS::SOAP
       do_soap_request(req, response_class: EwsResponse)
     end
 
+    def cd_update_item(opts)
+      opts = opts.clone
+      [:item_changes].each do |k|
+        validate_param(opts, k, true)
+      end
+      req = build_soap! do |type, builder|
+        attribs = {}
+        attribs['MessageDisposition'] = opts[:message_disposition] if opts[:message_disposition]
+        attribs['ConflictResolution'] = opts[:conflict_resolution] if opts[:conflict_resolution]
+        attribs['SendMeetingInvitationsOrCancellations'] = opts[:send_meeting_invitations_or_cancellations] if opts[:send_meeting_invitations_or_cancellations]
+        if(type == :header)
+        else
+          builder.nbuild.UpdateItem(attribs) {
+            builder.nbuild.parent.default_namespace = @default_ns
+            builder.saved_item_folder_id!(opts[:saved_item_folder_id]) if opts[:saved_item_folder_id]
+            builder.cd_item_changes!(opts[:item_changes])
+          }
+        end
+      end
+      do_soap_request(req, response_class: EwsResponse)
+    end
+
     # Delete an item from a mailbox in the Exchange store
     # @see http://msdn.microsoft.com/en-us/library/aa580484(v=exchg.140).aspx
     #
