@@ -1143,6 +1143,32 @@ module Viewpoint::EWS::SOAP
       }
     end
 
+    def cd_item_changes!(changes)
+      nbuild.ItemChanges {
+        changes.each do |chg|
+          cd_item_change!(chg)
+        end
+      }
+    end
+
+    # @see http://msdn.microsoft.com/en-us/library/aa581081(v=exchg.140).aspx
+    def cd_item_change!(change)
+      @nbuild[NS_EWS_TYPES].ItemChange {
+        updates = change.delete(:updates) # Remove updates so dispatch_item_id works correctly
+        dispatch_item_id!(change)
+        cd_updates!(updates)
+      }
+    end
+
+    # @see http://msdn.microsoft.com/en-us/library/aa581074(v=exchg.140).aspx
+    def cd_updates!(updates)
+      @nbuild[NS_EWS_TYPES].Updates {
+        updates.each do |update|
+          cd_dispatch_update_type!(update)
+        end
+      }
+    end
+
     # @see http://msdn.microsoft.com/en-us/library/aa581317(v=exchg.140).aspx
     def append_to_item_field!(upd)
       uri = upd.select {|k,v| k =~ /_uri/i}
@@ -1162,6 +1188,16 @@ module Viewpoint::EWS::SOAP
       @nbuild[NS_EWS_TYPES].SetItemField {
         dispatch_field_uri!(uri, NS_EWS_TYPES)
         dispatch_field_item!(upd, NS_EWS_TYPES)
+      }
+    end
+
+    def cd_set_item_field!(upd)
+      uri = upd.select {|k,v| k =~ /_uri/i}
+      raise EwsBadArgumentError, "Bad argument given for SetItemField." if uri.keys.length != 1
+      upd.delete(uri.keys.first)
+      @nbuild[NS_EWS_TYPES].SetItemField {
+        dispatch_field_uri!(uri, NS_EWS_TYPES)
+        cd_dispatch_field_item!(upd)
       }
     end
 
@@ -1284,6 +1320,21 @@ module Viewpoint::EWS::SOAP
       end
     end
 
+    def cd_dispatch_update_type!(update)
+      type = update.keys.first
+      upd  = update[type]
+      case type
+      when :append_to_item_field
+        append_to_item_field!(upd)
+      when :set_item_field
+        cd_set_item_field!(upd)
+      when :delete_item_field
+        delete_item_field!(upd)
+      else
+        raise EwsBadArgumentError, "Bad Update type. #{type}"
+      end
+    end
+
     # A helper to dispatch to a FieldURI, IndexedFieldURI, or an ExtendedFieldURI
     # @todo Implement ExtendedFieldURI
     def dispatch_field_uri!(uri, ns=NS_EWS_MESSAGES)
@@ -1322,6 +1373,13 @@ module Viewpoint::EWS::SOAP
     def dispatch_field_item!(item, ns_prefix = nil)
       item.values.first[:xmlns_attribute] = ns_prefix if ns_prefix
       build_xml!(item)
+    end
+
+    # Chartdesk Custom Insert item, enforce xmlns attribute if prefix is present
+    def cd_dispatch_field_item!(item)
+      item.each_pair {|k,v|
+        self.send("#{k}!", v)
+      }
     end
 
     def room_list!(cfg_prop)
