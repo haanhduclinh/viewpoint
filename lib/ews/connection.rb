@@ -30,10 +30,14 @@ class Viewpoint::EWS::Connection
   #   seconds
   # @option opts [Fixnum] :connect_timeout override the default connect timeout
   #   seconds
+  # @option opts [Fixnum] :send_timeout override the default send timeout
+  #   seconds
   # @option opts [Array]  :trust_ca an array of hashed dir paths or a file
   # @option opts [String] :user_agent the http user agent to use in all requests
   def initialize(endpoint, opts = {})
-    @log = Logging.logger[self.class.name.to_s.to_sym]
+    @log = Logger.new(STDOUT)
+    @log.level = Logger::WARN
+
     if opts[:user_agent]
       @httpcli = HTTPClient.new(agent_name: opts[:user_agent])
     else
@@ -53,6 +57,7 @@ class Viewpoint::EWS::Connection
     @httpcli.keep_alive_timeout = 60
     @httpcli.receive_timeout = opts[:receive_timeout] if opts[:receive_timeout]
     @httpcli.connect_timeout = opts[:connect_timeout] if opts[:connect_timeout]
+    @httpcli.send_timeout = opts[:send_timeout] if opts[:send_timeout]
     @endpoint = endpoint
   end
 

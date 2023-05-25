@@ -19,7 +19,8 @@
 module Viewpoint::EWS::ConnectionHelper
 
   def init_logging!
-    @log = Logging.logger[self.class.name.to_s.to_sym]
+    @log = Logger.new(STDOUT)
+    @log.level = Logger::WARN
   end
 
   # @param [String] xml to parse the errors from.
