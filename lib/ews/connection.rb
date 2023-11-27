@@ -34,7 +34,9 @@ class Viewpoint::EWS::Connection
   # @option opts [String] :user_agent the http user agent to use in all requests
   def initialize(endpoint, opts = {})
     @log = Logging.logger[self.class.name.to_s.to_sym]
-    if opts[:user_agent]
+    if opts[:default_header]
+      @httpcli = HTTPClient.new(default_header: opts[:default_header])
+    elsif opts[:user_agent]
       @httpcli = HTTPClient.new(agent_name: opts[:user_agent])
     else
       @httpcli = HTTPClient.new
